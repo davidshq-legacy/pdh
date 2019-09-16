@@ -638,4 +638,152 @@ function pdh_options_page_html() {
      * Network Admin - settings.php
      */
 
+     // Remove a Sub Menu
+    // https://developer.wordpress.org/reference/functions/remove_menu_page/
+    // Note that this does not prevent direct access to the pages, don't use this as a way to restrict user capabilities.
+    function pdh_remove_options_page() {
+        remove_menu_page( 'tools.php' );
+    }
+    add_action( 'admin_menu', 'pdh_remove_options_page', 99);
+
+    // Shortcodes: https://developer.wordpress.org/plugins/shortcodes/
+    // "Shortcodes are macros that can be used to perform dynamic interactions with the content. i.e. creating a gallery from images attached to the post or rendering a video."
+    // "...are a valuable way of keeping content clean and semantic while allowing end users some ability to programmatically alter the presentation of their content."
+    // Built-in Shortcodes: [caption] (wrap captions around content), [gallery] (show image gallery), [audio] (embed and play), [video] (embed and play), playlist (display collection of audio/video files), [embed] (wrap embedded items).
+    // Shortcodes are basically filters, don't give them side effects!
+    // Use init action hook
+function pdh_shortcodes_init()
+{
+    function pdh_shortcode($atts = [], $content = null)
+    {
+        // do something to $content
+        
+        // always return
+        return $content;
+    }
+    add_shortcode('pdh', 'pdh_shortcode'); // string $tag, callable $func
+
+    // Enclosing shortcodes: https://developer.wordpress.org/plugins/shortcodes/enclosing-shortcodes/
+    // Same code but use html-like syntax: [tag][/tag]
+
+    // If nesting shortcodes, use do_shortcode() on final return value of the handler function.
+    function pdh_shortcode2($atts = [], $content = null)
+    {
+        // do something to $content
+        
+        // run shortcode parser recursively
+        $content = do_shortcode($content);
+
+        // always return
+        return $content;
+    }
+    add_shortcode('pdh2', 'pdh_shortcode2'); // string $tag, callable $func
+
+    // Shortcode with parameters: https://developer.wordpress.org/plugins/shortcodes/shortcodes-with-parameters/
+    // Shortcode handler function accepts 3 parameters: $atts (array of [$tag] attributes), $content (string of post content), $tag (string of the name of [$tag])
+    // function pdh_shortcode($atts = [], $content = null, $tag = '') {}
+    // User may enter invalid attributes, there is no way to enforce a policy on the use of attributes.
+    // To gain control of how shortcodes are used:
+    // 1. Declare default parameters for handler function
+    // 2. Perform normalization of the key case for the attributes array with array_change_key_case(): http://php.net/manual/en/function.array-change-key-case.php
+    // 3. Parse attributes using shortcode_atts() providing default values array and user $atts: https://developer.wordpress.org/reference/functions/shortcode_atts/
+    // 4. Secure the output before returning: https://developer.wordpress.org/plugins/security/securing-output/
+    function pdh_shortcode($atts = [], $content = null, $tag = '')
+    {
+        // normalize attribute keys, lowercase
+        $atts = array_change_key_case((array)$atts, CASE_LOWER);
+
+        // override default attributes with user attributes
+        $pdh_atts = shortcode_atts([
+            'title' => 'WordPress.org',
+        ], $atts, $tag);
+
+        // start output
+        $output = '';
+
+        // start box
+        $output = '<div class="pdh-box">';
+
+        // title
+        $output = .= '<h2>' . esc_html__($pdh_atts['title'], 'pdh') . '</h2>';
+
+        // enclosing tags
+        if (!is_null($content)) {
+            // secure output by executing the_content filter hook on $content
+            $output .= apply_filters('the_content', $content);
+
+            // run shortcode parser recursively
+            $output .= do_shortcode($content);
+        }
+
+        // end box
+        $output .= '</div>';
+
+        // return output
+        return $ouput;
+    }
+
+    function pdh_shortcodes_init()
+    {
+        add_shortcode('pdh', 'pdh_shortcode');
+    }
+
+    add_action('init', 'pdh_shortcodes_init');
+}
+
+    // Remove a shortcode
+    // Remember to make the priority number higher for add_action() or hook into a later action hook.
+    remove_shortcode(
+        'pdh' // string $tag
+    );
+
+    // Check if shortcode exists
+    shortcode_exists( 'pdh' );
+
+    // TinyMCE Enhanced Shortcodes
+
+    // Settings and Options: https://developer.wordpress.org/plugins/settings/
+    // There are two core APIs for building admin interfaces - Settings API and Options API.
+    // Settings API: https://developer.wordpress.org/plugins/settings/settings-api/
+    // Using Settings API: https://developer.wordpress.org/plugins/settings/using-settings-api/
+    // Using the Settings API allows for semi-automatic management (automatic handling of $_POST submissions and retrieval), includes security measures, and sanitizes data of admin pages containing settings forms.
+    // Admin Page has 1+ sections which have 1+ fields each.
+    // the form POST to wp-admin/options.php provides capabilities checking, users will need manage_options capability.
+
+    // unregister setting
+    unregister_setting()
+
+    // Options Form Rendering
+    setting_fields()
+    do_settings_sections()
+    do_settings_fields()
+
+    // Errors
+    add_settings_error()
+    get_settings_error()
+    settings_errors()
+
+    function pdh_settings_init()
+    {
+        // register a new setting for "reading" page
+        // creates an entry in the {$wpdb->prefix}_options table.
+        // register with admin_init hook
+        // https://developer.wordpress.org/reference/functions/register_setting/
+        // register_setting( string $option_group, string $option_name, callabl $sanitize_callback = '' );
+        register_setting('reading', 'pdh_setting_name');
+
+        // register a new section in the "reading" page
+        // https://developer.wordpress.org/reference/functions/add_settings_section/
+        add_settings_section(
+            'pdh_settings_section', // string $id
+            'PDH Settings Section', // string $title
+            'pdh_settings_section_cb', // callable $callback
+            'reading' // string $page
+        );
+
+        // register a new field in the "pdh_settings_section", inside the "reading" page
+        // https://developer.wordpress.org/reference/functions/add_settings_field/
+
+
+    }
 }
