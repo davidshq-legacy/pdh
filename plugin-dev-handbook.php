@@ -52,10 +52,10 @@
  register_uninstall_hook( __FILE__, 'pdh_uninstall' ); // https://developer.wordpress.org/reference/functions/register_uninstall_hook/
 
  // If we want to allow our plugin to be extended, we'll need a do_action(), true for both actions and filters
- do_action()
+ do_action();
 
  // If we want to remove some existing function, true for both actions and filters
- remove_action()
+ remove_action();
 
 // Store data for the plugin in the database using the Options API
 // If working with HTTP, use HTTP API
@@ -783,7 +783,82 @@ function pdh_shortcodes_init()
 
         // register a new field in the "pdh_settings_section", inside the "reading" page
         // https://developer.wordpress.org/reference/functions/add_settings_field/
-
-
+        add_settings_field(
+            'pdh_settings_field', // string $id
+            'PDH Setting', // string $title
+            'pdh_settings_field_cb', // callable $callback
+            'reading', // string $page = 'default'
+            'pdh_settings_section' // array $args = []
+        );
     }
+
+    /**
+     * register pdh_settings_init in the admin_init action hook
+     */
+    add_action('admin_init', 'pdh_settings_init');
+
+    /**
+     * callback functions
+     */
+
+     // section content cb
+     function pdh_settings_section_cb()
+     {
+         echo '<p>PDH Section Introduction.</p>';
+     }
+
+     // field content cb
+     function pdh_settings_field_cb()
+     {
+         // get the value of the setting we've registered with register_setting()
+         $setting = get_option('pdh_setting_name');
+         // output the field
+         ?>
+         <input type="text" name="pdh_setting_name" value="<?php eco isset( $setting ) ? esc_attr( $setting ) : ''; ?>">
+         <?php
+     }
+
+     // Options
+     // https://developer.wordpress.org/plugins/settings/options-api/
+     // Allows creating, reading, updating, deleting of WP options.
+     // Stored in {$wpdb->prefix}_options table. Find $table_prefix in wp-config.
+
+     // Single Value Storage
+     // add a new option: https://developer.wordpress.org/reference/functions/add_option/
+     add_option('pdh_custom_option', 'hello world!');
+     // get an option: https://developer.wordpress.org/reference/functions/get_option/
+     $option = get_option('pdh_custom_option');
+
+     // Array of Values Storage
+     // May include key/value pairs
+     // array of options
+     // If your WP instance needs to access a lot of individual options this becomes individual transactions with the db, which is expensive, thus arrays are often preferable
+     $data_r = ['title' => 'hello world!', 1, false];
+     // add a new option
+     add_option('pdh_custom_option_array', $data_r);
+     // get an option
+     $options_r = get_option('pdh_custom_option_array');
+     //outut the title
+     echo esc_html($options_r['title']);
+
+     // See also: https://developer.wordpress.org/reference/functions/update_option/
+     update_option()
+
+     // https://developer.wordpress.org/reference/functions/delete_option/
+     delete_option()
+
+     // https://developer.wordpress.org/reference/functions/add_site_option/
+     add_site_option()
+
+     // https://developer.wordpress.org/reference/functions/get_site_option/
+     update_site_option()
+
+     // https://developer.wordpress.org/reference/functions/delete_site_option/
+     delete_site_option()
+
+     // See admin/plugin-pdh-custom-page.php for full settings/options example
+
+     // Metadata: https://developer.wordpress.org/plugins/metadata/
+     // Metadata is information about information. In WP it is associated with posts, users, comments, and terms.
+     
 }
