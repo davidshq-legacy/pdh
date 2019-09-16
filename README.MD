@@ -3,5 +3,8 @@ I'm working my way through the [WP Plugin Developer Handbook](https://developer.
 
 FYI: The plugin doesn't currently work. First I'm getting everything/almost everything into the plugin files, then will work on making it functional.
 
+# License is GPLv2
+There ya go.
+
 # Release History
 0.0.1 - Initial Commit.
