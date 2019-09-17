@@ -92,3 +92,30 @@ $response = wp_remote_post( 'http://your-contact-form.com', $args );
 // Watch for x-ratelimit-limit (# requests allowed in x period), x-rate-limit-remaining (# requests remaining in x period), content-length (in bytes), last-modified, cache-control (how should client handle caching)
 // Read documentation of each specific API for other headers to watch for
 $response = wp_remote_head( 'https://api.github.com/users/blobaugh' );
+
+// To make any sort of HTTP Request
+// https://developer.wordpress.org/reference/functions/wp_remote_request
+$args = array(
+    'method' => 'DELETE'
+);
+$response = wp_remote_request( 'http://some-api.com/object/to/delete', $args );
+
+// Caching
+// There are a number of ways to cache, we'll look at WP specific Transients.
+// set_transient( $transient, $value, $expiration );
+// Below would cache for one hour.
+$response = wp_remote_get( 'https://api.github.com/users/blobaugh' );
+set_transient( 'blobaugh_github_userinfo', $response, 60*60 );
+
+// We can then query this transient
+$github_userinfo = get_transient( 'blobaugh_github_userinfo' );
+
+// Need to check if expired
+if ( false === $github_userinfo ) {
+    // Transient expired, refresh the data
+    $response = wp_remote_get( 'https://api.github.com/users/blobaugh' );
+    set_transient( 'blobaugh_github_userinfo', $response, 60*60 );
+}
+
+// Delete a transient
+delete_transient( 'blobaugh_github_userinfo' );
