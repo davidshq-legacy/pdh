@@ -1,4 +1,11 @@
-<?php ?>
+<?php
+/**
+ * jQuery Sample Usage
+ *
+ * Handbook: https://developer.wordpress.org/plugins/javascript/jquery/
+ * Handbook: https://developer.wordpress.org/plugins/javascript/ajax/
+ */
+?>
 <head>
 <script src="https://ajax.aspnetcdn.com/ajax/jQuery/jquery-3.4.1.min.js"></script>
 </head>

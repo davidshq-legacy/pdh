@@ -87,6 +87,7 @@
  *  - date_i18n() - https://developer.wordpress.org/reference/functions/date_i18n
  *
  * Handbook: https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/
+ * Handbook: https://developer.wordpress.org/plugins/internationalization/security/
  * gettext Official: https://www.gnu.org/software/gettext/
  * Codex: https://codex.wordpress.org/WordPress_in_Your_Language
  * Meta Handbook: https://make.wordpress.org/meta/handbook/documentation/translations/
