@@ -1,79 +1,129 @@
 <?php
 /**
- * Plugin Name: Plugin Dev Handbook
- * Plugin URI: https://somedomain.com/
+ * Plugin Name: WP Plugin Dev Handbook Unofficial Reference Plugin
+ * Plugin URI: https://github.com/davidshq/
  * Description: Takes the best practices and code from the handbook and provides them in a plugin along with useful notes and links.
- * Version: 0.0.1
+ * Version: 0.0.2
  * Requires at least: 5.2
  * Requires PHP: 7.2
  * Author: Dave Mackey
- * Author URI: https://somedomain.com/
+ * Author URI: https://davemackey.net/
  * License: GPLv2 or later
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: plugin-dev-handbook
- * Domain Path: Where translations can be found
- * Network: Whether plugin can be activated network-wide
+ * Text Domain: pdh
+ * Domain Path: // Where translations can be found
+ * Network: // Whether plugin can be activated network-wide
  */
 
  // We'll need some Hooks
  // Actions allow us to add/change WP functionality
  // Filters allow us to alter content as it is loaded/displayed to the user
 
-
- // Setup a Custom Post Type
+/**
+ * Setup a Custom Post Type
+ */
  function pdh_setup_book_post_type() {
-     // register "book" custom post type
+     // register_post_type( $cpt_name, [ $args ] );
      register_post_type( 'book', ['public' => 'true'] );
  }
  add_action( 'init', 'pdh_setup_post_type');
 
- // Activate plugin
+/**
+ * Activate Plugin
+ */
  function pdh_activate() {
-     pluginprefix_setup_post_type();
+     pdh_setup_post_type();
      // clear permalinks
      flush_rewrite_rules();
  }
- register_activation_hook( __FILE__, 'pdh_activate' ); // https://developer.wordpress.org/reference/functions/register_activation_hook/
 
- // Deactivate plugin
+/**
+ * Register Activation Hook
+ *
+ * Reference: https://developer.wordpress.org/reference/functions/register_activation_hook/
+ */
+ register_activation_hook( __FILE__, 'pdh_activate' ); //
+
+/**
+ * Deactivate Plugin
+ */
  function pdh_deactivate() {
      // unregister post type
      unregister_post_type( 'book' );
      // clear permalinks
      flush_rewrite_rules();
  }
- register_deactivation_hook( __FILE__, 'pdh_deactivate' ); // https://developer.wordpress.org/reference/functions/register_deactivation_hook/
 
- // Uninstall plugin
+/**
+ * Register Deactivation Hook
+ *
+ * Reference: https://developer.wordpress.org/reference/functions/register_deactivation_hook/
+ */
+ register_deactivation_hook( __FILE__, 'pdh_deactivate' );
+
+/**
+ * Uninstall Plugin
+ *
+ * When a plugin is to be entirely removed (deleted) from a WP instance we need to ensure that it appropriately
+ * removes itself from WP and doesn't leave junk behind (files, database entries, etc.)
+ *
+ * This can be done using the register_uninstall_hook or by creating an uninstall.php file in the base of one's plugin.
+ * For the latter please see the uninstall.php file.
+ */
  function pdh_uninstall() {
      // Do something, like remove options and tables
-     // Alternatively we could create an uninstall.php file which WP will automatically run when someone deletes the plugin
  }
- register_uninstall_hook( __FILE__, 'pdh_uninstall' ); // https://developer.wordpress.org/reference/functions/register_uninstall_hook/
 
- // If we want to allow our plugin to be extended, we'll need a do_action(), true for both actions and filters
+/**
+ * Register Uninstall Hook
+ *
+ * Reference: https://developer.wordpress.org/reference/functions/register_uninstall_hook/
+ */
+ register_uninstall_hook( __FILE__, 'pdh_uninstall' );
+
+/**
+ * Creating our Own Custom Hooks - Actions and Filters
+ */
  do_action();
 
- // If we want to remove some existing function, true for both actions and filters
+/**
+ * Removing Any Hook - Actions and Filters
+ *
+ */
  remove_action();
 
-// Store data for the plugin in the database using the Options API
-// If working with HTTP, use HTTP API
-// And don't forget the Plugin API
+/**
+ * If you are storing data for the plugin in the database use the built-in Options API.
+ * If working with HTTP, use the HTTP API.
+ * And for plugins (such as this one) don't forget the Plugin API.
+ */
 
 
-// Remember that by default all variables, functions, and classes are defined in the global namespace.
-// This does not affect variables inside of functions or classes.
-// You can prefix everything with a unique identifier to avoid accidentally overwriting or being overwritten.
-// One can also use PHP built-in functions to check for existence: isset(), function_exists, class_exists, defined()
-// But it is easier to use a class for code in the plugin.
+/**
+ * Creating a Class
+ *
+ * By default all variables, functions, and classes are defined in the global namespace (which includes WordPress as
+ * well as all themes and plugins). It does not affect variables inside functions or classes.
+ *
+ * One can prefix a unique identifier to every variable, function, and class OR one can use PHP's built-in
+ * functions (#001) to detect if a conflict exists BUT it is best to create a class in which your code is separated in
+ * scope from the global namespace.
+ */
 if (!class_exists( 'pdh_Plugin' )) {
     class pdh_Plugin
     {
+	    /**
+	     * Register a Setting
+	     */
         public static function init() {
             register_setting( 'pdh_settings', 'pdh_option_foo' );
         }
 
+	    /**
+         * Return a Setting
+         *
+	     * @return mixed|void
+	     */
         public static function get_foo() {
             return get_option( 'pdh_option_foo' );
         }
@@ -83,302 +133,63 @@ if (!class_exists( 'pdh_Plugin' )) {
     pdh_Plugin::get_foo();
 }
 
-// The sample folder structure included in the dev handbook is:
-// plugin-name
-//      plugin-name.php
-//      uninstall.php
-//      /languages
-//      /includes
-//      /admin
-//          /js
-//          /css
-//          /images
-//      /public
-//          /js
-//          /css
-//          /images
+/**
+ * How to Structure One's Plugin Code
+ *
+ * The sample folder structure included in the dev handbook is:
+ * plugin-name
+ *  plugin-name.php
+ *  uninstall.php
+ *  /languages
+ *  /includes
+ *  /admin
+ *      /admin
+ *          /js
+ *          /css
+ *          /images
+ *      /public
+ *          /js
+ *          /css
+ *          /images
+ *
+ * There are three major ways in which WordPress plugins tend to be arranged:
+ * 1. A single plugin file that contains functions (e.g. pdh-plugin.php is the entirety of the plugin
+ *  - Example: https://github.com/GaryJones/move-floating-social-bar-in-genesis/blob/master/move-floating-social-bar-in-genesis.php
+ * 2. A single plugin file that contains a class, instantiated object, and optionally functions
+ *  - Example: https://github.com/norcross/wp-comment-notes/blob/master/wp-comment-notes.php
+ * 3. A main plugin file with one or more class files.(#002)
+ *  - Example: https://github.com/DevinVinson/WordPress-Plugin-Boilerplate
+ *
+ * There are several different boilerplate options available that can help you get started:(#003)
+ * - WPPB - Probably the most popular: https://github.com/DevinVinson/WordPress-Plugin-Boilerplate
+ * - WP CLI Scaffold - Pretty bare bones option: https://developer.wordpress.org/cli/commands/scaffold/plugin/
+ */
 
-// Code can be arranged in three main ways:
-//  - single plugin file containing functions: https://github.com/GaryJones/move-floating-social-bar-in-genesis/blob/master/move-floating-social-bar-in-genesis.php
-//  - single plugin file containing a class, instantiated object, and optionally functions: https://github.com/norcross/wp-comment-notes/blob/master/wp-comment-notes.php
-//  - main plugin file with one or more class files:  https://github.com/tommcfarlin/WordPress-Plugin-Boilerplate
-//      - see: https://jjj.blog/2012/12/slash-architecture-my-approach-to-building-wordpress-plugins/
-//      - see: https://iandunn.name/content/presentations/wp-oop-mvc/mvc.php#/
-
-// One can start with boilerplate including:
-//      - WPPB, probably the most popular: https://github.com/DevinVinson/WordPress-Plugin-Boilerplate (5663 stars)
-//      - WordPress Plugin Boilerplate, which hasn't been updated since 2014: https://github.com/claudiosanches/wordpress-plugin-boilerplate
-//      - WP Skeleton Plugin, also no updates since 2014: https://github.com/ptahdunbar/wp-skeleton-plugin
-//      - WP CLI Scaffold, pretty bare bones though it includes a gruntfile,, .editorconfig, .gitignore, .distignore, phpunit.xml.dist, .travis.yml, .phpcs.xml.dist, etc.: https://developer.wordpress.org/cli/commands/scaffold/plugin/
-
-// To get the URL to some file
-// Returns URL like somedomain.com/wp-content/plugins/pdh/phd.js
+/**
+ * Get the URL to a File(#004)
+ *
+ * Returns a URL like: somedomain.com/wp-content/plugins/pdh/pdh.js
+ *
+ * There are similar functions you'll want to be aware of as well
+ * - For Plugins: plugin_dir_url(), plugin_dir_path(), plugin_basename()
+ * - For Themes: get_template_directory_uri(), get_stylesheet_directory_uri(), get_stylesheet_uri(),
+ * get_theme_root_uri(), get_theme_root(), get_theme_roots(), get_stylesheet_directory(), get_template_directory
+ * - For Site Home: home_url(), get_home_path()
+ * - For WP: admin_url(), get_admin_url(), get_home_url(), network_admin_url(), network_site_url(), network_home_url()
+ *
+ * There are WP global constants for paths but these should not be used directly.(#004)
+ */
 plugins_url( 'pdhscript.js', __FILE__ );
 
-// To load plugins JS
+/**
+ * To Enqueue (Load) JavaScript Files
+ */
 wp_enqueue_script();
 
-// To load plugins CSS
+/**
+ * To Enqueue (Load) CSS Files
+ */
 wp_enqueue_style();
-
-// For finding locations see also
-// for plugins:  plugin_dir_url, plugin_dir_path, and plugin_basename
-// for themes: get_template_directory_uri(), get_stylesheet_directory_uri(), get_stylesheet_uri(), get_theme_root_uri(), get_theme_root(), get_theme_roots(), get_stylesheet_directory(), get_template_directory()
-// for site home: home_url(), get_home_path()
-// for wp: admin_url(), site_url(), content_url(), includes_url(), wp_upload_dir()
-// for multisite: get_admin_url, get_home_url, get_site_url, network_admin_url, network_site_url, network_home_url
-// There are WP constants for path, but these should not be used directly.
-
-
-// Safety
-// Check User Capabilities
-//      Roles are groups, groups have capabilities
-//      Capabilities are the specific permissions assigned to a user / user role
-//      Only run code if user has proper capabilities to run it
-//      Roles are a hierarchy, inheriting all lower roles' capabilities.
-// Validate
-// Sanitize Input
-// Sanitize Output
-// Create and Validate Nonces
-
-// Checking User Capabilities
-/**
- * generate a Delete link based on homepage url
- */
-function pdh_generate_delete_link($content)
-{
-    // run only for single post page
-    if (is_single() && in_the_lopp() && is_main_query()) {
-        // add query arguments: action, post
-        $url = add_query_arg(
-            [
-                'action' => 'phd_frontend_delete',
-                'post'   => get_the_ID();
-            ],
-            home_url()
-        );
-        return $content . ' <a href="' . esc_url($url) . '">' . esc_html__('Delete Post', 'pdh' ) . '</a>'; 
-    }
-    return null;
-    }
-
-    /**
-     * request handler
-     */
-    function pdh_delete_post()
-    {
-        if (isset($_GET['action']) && $_GET['action'] === 'pdh_frontend_delete') {
-            // verify we have a post id
-            $post_id = (isset($_GET['post'])) ? ($_GET['post']) : (null);
-
-            // verify there is a post with such a number
-            $post = get_post((int)$post_id);
-            if (empty($post)) {
-                return;
-            }
-
-            // delete the posty
-            wp_trash_post($post_id);
-
-            // redirect to admin page
-            $redirect = admin_url('edit.php');
-            wp_safe_redirect($redirect);
-
-            // we are done
-            die;
-        }
-    }
-
-    if (current_user_can('edit_others_post')) {
-        /**
-         * add the delete link to the end of the post content
-         */
-        add_filter('the_content', 'pdh_generate_delete_link');
-
-        /**
-         * register our request handler with the init hook
-         */
-        add_action('init', 'pdh_delete_post');
-    }
-}
-
-// Validating Data
-// Can use built-in PHP functions: isset(), empty(), mb_strlen(), strlen(), preg_match(), strpos(), count(), in_array()
-// WP functions: is_email(), term_exists(), username_exists(), validate_file() - some others are named variants of *_exists(), *_validate(), and is_*(), though not all are for validation.
-// Custom Functions: name like a question, e.g., is_phone_number()
-function is_us_zip_code($zip_code)
-{
-    // 1: empty
-    if (empty($zip_code)) {
-        return false;
-    }
-
-    // 2: more than 10 characters
-    if (strlen(trim($zip_code)) > 10) {
-        return false;
-    }
-
-    // 3: incorrect format
-    if (!preg_match('/^\d{5}(\-?\d{4})?$/', $zip_code)) {
-        return false;
-    }
-
-    // passed
-    return true;
-}
-
-// Call validation
-if (isset($_POST['phd_zip_code']) && is_us_zip_code($_POST['phd_zip_code'])) {
-    // do something
-}
-
-// Here we are checking an incoming sort key
-$allowed_keys = ['author', 'post_author', 'date', 'post_date'];
-
-$orderby = sanitize_key($_POST['orderby']);
-
-// Third param says to check not only valid values but types, should be string.
-// in_array is built-in php
-if (in_array($orderby, $allowed_keys, true)) {
-    // modify query to sort by the orderby key
-}
-
-// WP provides a number of built-in data sanitization functions.
-santize_email()
-sanitize_file_name()
-sanitize_hex_color()
-sanitize_hex_color_no_hash()
-sanitize_html_class()
-sanitize_key()
-sanitize_meta()
-sanitize_mime_type()
-sanitize_option()
-sanitize_sql_orderby()
-sanitize_text_field()
-sanitize_title()
-sanitize_title_for_query()
-sanitize_title_with_dashes()
-sanitize_user()
-esc_url_raw()
-wp_filter_post_kses()
-wp_filter_nohtml_kses()
-
-// For example
-$ title = sanitize_text_field($_POST['title']);
-update_post_meta($post->ID, 'title', $title);
-
-// Securing Output (helps with XSS attacks)
-esc_html() // anytime an HTML element encloses a section of data being displayed
-esc_url() // on all URLs, including those in src and href attributes
-esc_js() // for inline JS
-esc_attr() // for everything else that's printed into an HTML element's attribute
-// Most WP functions properly prepare data for output and don't need to be escaped again.
-
-// Rather than using echo, use WP localization functions
-esc_html_e( 'Hello World', 'text_domain' );
-// same as
-echo esc_html( __( 'Hello World', 'text_domain' ) );
-// Available helper functions are:
-esc_html__()
-esc_html_e()
-esc_html_x()
-esc_attr__()
-esc_attr_e()
-esc_attr_x()
-
-// If output needs to be escaped in a specific way use wp_kses (kisses)
-// Makes sure only specific HTML elements, attributes, and attribute values will occur in out, normalizes HTML entites.
-$allowed_html = [
-    'a'     => [
-        'href'  => [],
-        'title' => [],
-    ],
-    'br'   => [],
-    'em'   => [],
-    'strong' => [],
-];
-echo wp_kses( $custom_content, $allowed_html );
-// wp_kses_post() is a wrapper function for wp_kses where $allowed_html is a set of rules used by post content.
-echo wp_kses_post( $post_content );
-
-// Nonces are generated numbers used to verify origin and intent of requests for security purposes, each nonce can only be used once.
-// If your plugin allows users to submit data; be it on the Admin or the Public side; you have to make sure that the user is who they say they are and that they have the necessary capability to perform the action.
-// And actually want to perform said action and haven't been tricked into it.
-// When you generate the delete link, you’ll want to use wp_create_nonce() function to add a nonce to the link, the argument passed to the function ensures that the nonce being created is unique to that particular action.
-// https://markjaquith.wordpress.com/2006/06/02/wordpress-203-nonces/
-
-/**
- * generate a delete link based on the homepage url
- */
-function pdh_generate_delete_link($content)
-{
-    // run only for single post page
-    if (is_single() && in_the_loop() && is_main_query()) {
-        // add query arguments: action, post, nonce
-        $url = add_query_arg(  )(
-            [
-                'action'    => 'pdh_frontend_delete',
-                'post'      => get_the_ID(),
-                'nonce'     => wp_create_nonce('pdh_frontend_delete'),
-            ],
-            home_url()
-        );
-        return $content . ' <a href="' . esc_url($url) . '">' . esc_html__('Delete Post', 'pdh') . '</a>';
-    }
-    return null;
-}
-
-/**
- * request handler
- */
-function pdh_delete_post()
-{
-    if (
-        isset($_GET['action']) &&
-        isset($_GET['nonce']) &&
-        $_GET['action'] === 'pdh_frontend_delete' &&
-        wp_verify_nomnce($_GET['nonce'], 'pdh_frontend_delete')
-    ) {
-        // verify we have a post id using a ternary operator
-        // useful reference on ternary operator: https://davidwalsh.name/php-shorthand-if-else-ternary-operators
-        // $post_id = (condition) ? (true return value) : (false return value)
-        $post_id = (isset($_GET['post'])) ? ($_GET['post']) : (null);
-        // above is same as:
-        If (isset($_GET['post'])) {
-            $post_id = $_GET['post'];
-        } else {
-            $post_id = null;
-        }
-
-        // verify there is a post with such a number
-        $post = get_post((int)$post_id);
-        if (empty($post)) {
-            return; // Wait didn't we just ensure that there is a post using ternary above?
-        }
-
-        // delete the post
-        wp_trash_post($post_id);
-
-        // redirect to the adminpage
-        $redirect = admin_url('edit.php');
-        wp_safe_redirect($redirect);
-
-        // we are done
-        die;
-    }
-}
-
-if (current_user_can('edit_others_posts')) {
-    /**
-     * add the delete link to the end of the post content
-     */
-    add_filter('the_content', 'pdh_generate_delete_link');
-
-    /**
-     * register our request handler with the init hook
-     */
-    add_action('init', 'pdh_delete_post');
-}
 
 // Hooks are a way for one piece of code to interact/modify another piece of code.
 // Type Types: Actions, Filters

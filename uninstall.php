@@ -1,12 +1,22 @@
 <?php
+/**
+ * Using Uninstall.php
+ *
+ * This file can be included in the base folder of a plugin and will automatically be run by WP when your plugin is
+ * uninstalled.
+ *
+ * Handbook: https://developer.wordpress.org/plugins/plugin-basics/uninstall-methods/
+ */
 
 // if uninstall.php is not called by WP, die
-if (!defined('WP_UNINSTALL_PLUGIN')) {
+if ( !defined('WP_UNINSTALL_PLUGIN' ) ) {
     die;
 }
 
-$option_name = 'wporg_option';
+// Provide option to be removed
+$option_name = 'pdh_option';
 
+// Delete the option
 delete_option($option_name);
 
 // for site options in multisite
