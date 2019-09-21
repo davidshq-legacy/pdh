@@ -7,6 +7,12 @@ FYI: The plugin doesn't currently work. First I'm getting everything/almost ever
 
 Note: This reference plugin draws extensively on the materials in the WP Developer Handbook including usage of code and text.
 
+# Other Resources
+- DEVELOPER-TOOLING.MD includes notes about creating a workspace including the proper tooling.
+- FOUNDATIONAL.MD includes high level concepts related to WP and WP plugin development.
+- NOTES.MD are footnotes found throughout the rest of this repository that provide additional details that didn't
+fit in the main "narrative."
+
 # License is GPLv2
 There ya go.
 

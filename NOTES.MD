@@ -12,3 +12,4 @@ PDH attempts to provide a concise, focused, best practices, opinioniated guide t
 - (#005) Built-in PHP functions include: isset(), empty(), mb_strlen(), strlen(), preg_match(), strpos(), count(), in_array()
 - (#006) An old, outdated practice is to pass a PHP file path as the $menu_slug with a null $function, don't do this. See the top-level-menus page for an example.
 - (#007) One could handle the submission of forms on options pages manually but why would one when one can use the Settings API?
+- (#008) 

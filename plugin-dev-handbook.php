@@ -2,8 +2,9 @@
 /**
  * Plugin Name: WP Plugin Dev Handbook Unofficial Reference Plugin
  * Plugin URI: https://github.com/davidshq/
- * Description: Takes the best practices and code from the handbook and provides them in a plugin along with useful notes and links.
- * Version: 0.0.2
+ * Description: Takes the best practices and code from the handbook and provides them in a plugin along with useful
+ * notes and links.
+ * Version: 0.0.3
  * Requires at least: 5.2
  * Requires PHP: 7.2
  * Author: Dave Mackey
@@ -78,14 +79,6 @@
  register_uninstall_hook( __FILE__, 'pdh_uninstall' );
 
 
-
-/**
- * If you are storing data for the plugin in the database use the built-in Options API.
- * If working with HTTP, use the HTTP API.
- * And for plugins (such as this one) don't forget the Plugin API.
- */
-
-
 /**
  * Creating a Class
  *
@@ -121,35 +114,7 @@ if (!class_exists( 'pdh_Plugin' )) {
 }
 
 /**
- * How to Structure One's Plugin Code
- *
- * The sample folder structure included in the dev handbook is:
- * plugin-name
- *  plugin-name.php
- *  uninstall.php
- *  /languages
- *  /includes
- *  /admin
- *      /admin
- *          /js
- *          /css
- *          /images
- *      /public
- *          /js
- *          /css
- *          /images
- *
- * There are three major ways in which WordPress plugins tend to be arranged:
- * 1. A single plugin file that contains functions (e.g. pdh-plugin.php is the entirety of the plugin
- *  - Example: https://github.com/GaryJones/move-floating-social-bar-in-genesis/blob/master/move-floating-social-bar-in-genesis.php
- * 2. A single plugin file that contains a class, instantiated object, and optionally functions
- *  - Example: https://github.com/norcross/wp-comment-notes/blob/master/wp-comment-notes.php
- * 3. A main plugin file with one or more class files.(#002)
- *  - Example: https://github.com/DevinVinson/WordPress-Plugin-Boilerplate
- *
- * There are several different boilerplate options available that can help you get started:(#003)
- * - WPPB - Probably the most popular: https://github.com/DevinVinson/WordPress-Plugin-Boilerplate
- * - WP CLI Scaffold - Pretty bare bones option: https://developer.wordpress.org/cli/commands/scaffold/plugin/
+
  */
 
 /**
@@ -169,12 +134,9 @@ if (!class_exists( 'pdh_Plugin' )) {
 plugins_url( 'pdhscript.js', __FILE__ );
 
 /**
- * To Enqueue (Load) JavaScript Files
- */
-wp_enqueue_script();
-
-/**
  * To Enqueue (Load) CSS Files
+ *
+ * TODO: Add working example.
  */
 wp_enqueue_style();
 
