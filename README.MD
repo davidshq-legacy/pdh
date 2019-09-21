@@ -13,3 +13,4 @@ There ya go.
 # Release History
 - 0.0.1 - Initial Commit.
 - 0.0.2 - Finished first pass through Plugin Handbook code and began refactoring code.
+- 0.0.2 - Mainly refactoring code in plugin-dev-handbook.php out into separate files by functional purpose.
