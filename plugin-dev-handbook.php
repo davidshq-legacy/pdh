@@ -29,7 +29,7 @@
  * Activate Plugin
  */
  function pdh_activate() {
-     pdh_setup_post_type();
+     pdh_setup_book_post_type();
      // clear permalinks
      flush_rewrite_rules();
  }
